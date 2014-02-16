@@ -1,0 +1,6 @@
+# parity - checking for everty other square
+
+# auto cancelling - if anythign is surrounded, it's probability should be set to zero
+
+# modes - left-right v up-down
+
