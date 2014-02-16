@@ -52,10 +52,14 @@ class RihannaPlayer
       battle_row.map do |coordinate|
         x += 1
         if coordinate == :hit && !@hit_array.include?([x,y])
+          type = hit
+          update_probability_grid(coordinate,type,state)
           @hit_array << [x,y]
           @unknown_array.delete_if {|probability,coordinate_array| coordinate_array = [x,y] }
         end
         if coordinate == :miss && !@miss_array.include?([x,y])
+          type = miss
+          update_probability_grid(coordinate,type,state)
           @miss_array << [x,y]
           @unknown_array.delete_if {|probability,coordinate_array| coordinate_array = [x,y] }
         end
@@ -63,7 +67,7 @@ class RihannaPlayer
     end    
   end
 
-  def update_probability_grid(state)
+  def update_probability_grid(coordinate,type,state)
 
   end
 
