@@ -2,6 +2,7 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 require "drb"
 require "forwardable"
 require "battleship/util"
+require "pry"
 
 module Battleship
   class PlayerServer
