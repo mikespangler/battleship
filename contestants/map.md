@@ -14,9 +14,17 @@ take_turn(state, ships_remaining)
   case mode
     when :hunt
       *use algorithm to pick random shit
+        1. check existing :unknown spaces
+        2. create hypothetical ships in the unknown spaces
+        3. increment each position on self.probability_hash when occupied
+        4. take the largest dark spot (or first, if tied)
+
 
       break
     when :left
+      self.last_position (1, 9)
+      DECREMENT X
+      guess = [x, y]
       break
     when :right
 
@@ -27,6 +35,8 @@ take_turn(state, ships_remaining)
     when :down
 
       break
+
+    return guess
 
   end
 
