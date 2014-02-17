@@ -2,21 +2,12 @@ class RihannaPlayer
   attr_reader :name
   def initialize
     @name = "Battleship Starring RihannaBot"
-    # @probability_grid = [
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    #   [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],
-    # ]
     @turn_count = 0
+    @turn_history_hash = {}
     @hit_array = []
     @miss_array = []
+    @previous_ships_remaining =[]
+    @directions_array = ["up","down","left","right"]
     @probability_hash = [
       [ 0.5 => [0,0], 0.5 => [1,0], 0.5 => [2,0], 0.5 => [3,0], 0.5 => [4,0], 0.5 => [5,0], 0.5 => [6,0], 0.5 => [7,0], 0.5 => [8,0], 0.5 => [9,0]],
       [ 0.5 => [0,1], 0.5 => [1,1], 0.5 => [2,1], 0.5 => [3,1], 0.5 => [4,1], 0.5 => [5,1], 0.5 => [6,1], 0.5 => [7,1], 0.5 => [8,1], 0.5 => [9,1]],
@@ -43,7 +34,7 @@ class RihannaPlayer
     return [battleship, patrol_boat, cruiser, sub, carrier]
   end
 
-  def add_last_action(state)
+  def add_last_action(state,ships_remaining)
     @turn_count += 1
     y = -1
     state.each do |battle_row|
@@ -52,14 +43,10 @@ class RihannaPlayer
       battle_row.map do |coordinate|
         x += 1
         if coordinate == :hit && !@hit_array.include?([x,y])
-          type = hit
-          update_probability_grid([x,y],type,state)
           @hit_array << [x,y]
           @probability_hash.delete_if {|probability,coordinate_array| coordinate_array = [x,y] }
-        end
-        if coordinate == :miss && !@miss_array.include?([x,y])
-          type = miss
-          update_probability_grid([x,y],type,state)
+          hit([x,y],state,ships_remaining)
+        else coordinate == :miss && !@miss_array.include?([x,y])
           @miss_array << [x,y]
           @probability_hash.delete_if {|probability,coordinate_array| coordinate_array = [x,y] }
         end
@@ -67,16 +54,25 @@ class RihannaPlayer
     end    
   end
 
-  def update_probability_grid(coordinate,type,state)
-
+  def hit(coordinate,state,ships_remaining)
+    if ships_remaining.count == @previous_ships_remaining
+      if @directions_array.pop == "up"
+        return [coordinate[0],coordinate[1]+1]
+      elsif @directions_array.pop == "down"
+        return [coordinate[0],coordinate[1]-1]
+      elsif @directions_array.pop == "left"
+        return [coordinate[0]-1,coordinate[1]]
+      elsif@directions_array.pop == "right"
+        return [coordinate[0]+1,coordinate[1]]
+      end
+    end
   end
 
   def take_turn(state, ships_remaining)
-    add_last_action(state)
-    update_probability_grid(state)
-    puts @unknown_array
-    return [4,5] if @turn_count == 1
-
+    add_last_action(state,ships_remaining)
+     @previous_ships_remaining = ships_remaining.count
+    # return [4,5] if @turn_count == 1
+    binding.pry
   end
 
 
