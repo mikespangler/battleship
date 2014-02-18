@@ -19,17 +19,17 @@ class RihannaPlayer
     @previous_hit_array = []
     @previous_miss_array = []
     @current_mode_array = ["right","left","down","up"]
-    @probability_hash = [
-      [ 0.5 => [0,0], 0.5 => [1,0], 0.5 => [2,0], 0.5 => [3,0], 0.5 => [4,0], 0.5 => [5,0], 0.5 => [6,0], 0.5 => [7,0], 0.5 => [8,0], 0.5 => [9,0]],
-      [ 0.5 => [0,1], 0.5 => [1,1], 0.5 => [2,1], 0.5 => [3,1], 0.5 => [4,1], 0.5 => [5,1], 0.5 => [6,1], 0.5 => [7,1], 0.5 => [8,1], 0.5 => [9,1]],
-      [ 0.5 => [0,2], 0.5 => [1,2], 0.5 => [2,2], 0.5 => [3,2], 0.5 => [4,2], 0.5 => [5,2], 0.5 => [6,2], 0.5 => [7,2], 0.5 => [8,2], 0.5 => [9,2]],
-      [ 0.5 => [0,3], 0.5 => [1,3], 0.5 => [2,3], 0.5 => [3,3], 0.5 => [4,3], 0.5 => [5,3], 0.5 => [6,3], 0.5 => [7,3], 0.5 => [8,3], 0.5 => [9,3]],
-      [ 0.5 => [0,4], 0.5 => [1,4], 0.5 => [2,4], 0.5 => [3,4], 0.5 => [4,4], 0.5 => [5,4], 0.5 => [6,4], 0.5 => [7,4], 0.5 => [8,4], 0.5 => [9,4]],
-      [ 0.5 => [0,5], 0.5 => [1,5], 0.5 => [2,5], 0.5 => [3,5], 0.5 => [4,5], 0.5 => [5,5], 0.5 => [6,5], 0.5 => [7,5], 0.5 => [8,5], 0.5 => [9,5]],
-      [ 0.5 => [0,6], 0.5 => [1,6], 0.5 => [2,6], 0.5 => [3,6], 0.5 => [4,6], 0.5 => [5,6], 0.5 => [6,6], 0.5 => [7,6], 0.5 => [8,6], 0.5 => [9,6]],
-      [ 0.5 => [0,7], 0.5 => [1,7], 0.5 => [2,7], 0.5 => [3,7], 0.5 => [4,7], 0.5 => [5,7], 0.5 => [6,7], 0.5 => [7,7], 0.5 => [8,7], 0.5 => [9,7]],
-      [ 0.5 => [0,8], 0.5 => [1,8], 0.5 => [2,8], 0.5 => [3,8], 0.5 => [4,8], 0.5 => [5,8], 0.5 => [6,8], 0.5 => [7,8], 0.5 => [8,8], 0.5 => [9,8]],
-      [ 0.5 => [0,9], 0.5 => [1,9], 0.5 => [2,9], 0.5 => [3,9], 0.5 => [4,9], 0.5 => [5,9], 0.5 => [6,9], 0.5 => [7,9], 0.5 => [8,9], 0.5 => [9,9]]
+    @probability_array = [
+      [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0]],
+      [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],[9,1]],
+      [[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[7,2],[8,2],[9,2]],
+      [[0,3],[1,3],[2,3],[3,3],[4,3],[5,3],[6,3],[7,3],[8,3],[9,3]],
+      [[0,4],[1,4],[2,4],[3,4],[4,4],[5,4],[6,4],[7,4],[8,4],[9,4]],
+      [[0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5],[7,5],[8,5],[9,5]],
+      [[0,6],[1,6],[2,6],[3,6],[4,6],[5,6],[6,6],[7,6],[8,6],[9,6]],
+      [[0,7],[1,7],[2,7],[3,7],[4,7],[5,7],[6,7],[7,7],[8,7],[9,7]],
+      [[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,8],[7,8],[8,8],[9,8]],
+      [[0,9],[1,9],[2,9],[3,9],[4,9],[5,9],[6,9],[7,9],[8,9],[9,9]]
     ]
   end
 
@@ -53,16 +53,14 @@ class RihannaPlayer
       x = -1
       battle_row.map do |coordinate|
         x += 1
-        if coordinate == :hit && !@hit_array.include?([x,y])
-          @previous_hit_array = @hit_array
+        if coordinate == :hit && !@previous_hit_array.include?([x,y])
           @hit_array << [x,y]
-          @probability_hash.delete_if {|probability,coordinate_array| coordinate_array = [x,y] }
+          @probability_array.delete_if {|coordinate_array| coordinate_array = [x,y] }
           @x = x
           @y = y
-        else coordinate == :miss && !@miss_array.include?([x,y])
-          @previous_miss_array = @miss_array
+        elsif coordinate == :miss && !@previous_miss_array.include?([x,y])
           @miss_array << [x,y]
-          @probability_hash.delete_if {|probability,coordinate_array| coordinate_array = [x,y] }
+          @probability_array.delete_if {|coordinate_array| coordinate_array = [x,y] }
           @x = x
           @y = y
         end
@@ -119,10 +117,17 @@ class RihannaPlayer
       @next_x = rand(10)
       @next_y = rand(10)
     end
-    print @turn_count
   end
 
-  def determine_mode(state,ships_remaining)
+  def determine_mode(ships_remaining)
+    puts " mode #{@mode}"
+    puts " ship sunk  #{ships_remaining.count < @previous_ships_remaining.count}"
+    puts " new mode #{@hit_array.count == @previous_hit_array.count && @mode != "hunt"}"
+    puts " first hit #{@hit_array.count > @previous_hit_array.count && @mode == "hunt"}"
+    puts " next hit #{@hit_array.count > @previous_hit_array.count && @mode != "hunt"}"
+    puts " previous hit array #{@previous_hit_array}"
+    puts " hit array #{@hit_array}"
+
     if ships_remaining.count < @previous_ships_remaining.count
       @mode = "hunt"
       @current_mode_array = ["right","left","down","up"]
@@ -135,18 +140,20 @@ class RihannaPlayer
       next_hit
     elsif @hit_array.count == @previous_hit_array.count && @mode != "hunt"
       new_mode
-    else
+    elsif @hit_array.count == @previous_hit_array.count && @mode == "hunt"
       @mode = "hunt"
       hunt
     end
   end
 
   def take_turn(state, ships_remaining)
+    @previous_hit_array = @hit_array
+    @previous_miss_array = @miss_array
     add_last_action(state)
-    determine_mode(state, ships_remaining)
-    @previous_ships_remaining = ships_remaining
+    determine_mode(ships_remaining)
     @previous_x = @next_x
     @previous_y = @next_y
+    @previous_ships_remaining = ships_remaining
     return [@next_x,@next_y]
   end
 
